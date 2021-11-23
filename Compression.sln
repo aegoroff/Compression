@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compression", "Compression\Compression.csproj", "{FF4E68A1-86F1-42FE-8536-CF66C09B85FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Decompression", "Decompression\Decompression.csproj", "{642C35A3-3494-47B7-A30B-07231243302C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FF4E68A1-86F1-42FE-8536-CF66C09B85FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF4E68A1-86F1-42FE-8536-CF66C09B85FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF4E68A1-86F1-42FE-8536-CF66C09B85FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF4E68A1-86F1-42FE-8536-CF66C09B85FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{642C35A3-3494-47B7-A30B-07231243302C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{642C35A3-3494-47B7-A30B-07231243302C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{642C35A3-3494-47B7-A30B-07231243302C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{642C35A3-3494-47B7-A30B-07231243302C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
