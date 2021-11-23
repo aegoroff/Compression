@@ -35,6 +35,7 @@ namespace Decompression
                                     Directory.CreateDirectory(dir);
                                 }
 
+                                // Skip folders
                                 if (entry.FullName[^1] == '/')
                                 {
                                     continue;
