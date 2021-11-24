@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
+using System.Text;
 using CommandLine;
 
 namespace Decompression
@@ -23,14 +25,21 @@ namespace Decompression
                             Directory.Delete(opts.ExtractPath, true);
                         }
                         var watch = System.Diagnostics.Stopwatch.StartNew();
+                        var invalidFileNameChars = Path.GetInvalidFileNameChars();
+                        var invalidFilePathChars = Path.GetInvalidPathChars();
 
                         using (var archive = ZipFile.OpenRead(opts.ZipFile))
                         {
                             foreach (var entry in archive.Entries)
                             {
-                                var destinationPath = Path.GetFullPath(Path.Combine(opts.ExtractPath, entry.FullName));
+                                var zippedDir = entry.FullName.AsSpan()[.. (entry.FullName.Length - entry.Name.Length)].ToString();
+                                var d = string.Join("_", zippedDir.Split(invalidFilePathChars));
+                                var f = string.Join("_", entry.Name.Split(invalidFileNameChars));
+                                var full = Path.Combine(d, f);
+                                
+                                var destinationPath = Path.GetFullPath(Path.Combine(opts.ExtractPath, full));
                                 var dir = Path.GetDirectoryName(destinationPath);
-                                if (!Directory.Exists(dir))
+                                if (dir != null && !Directory.Exists(dir))
                                 {
                                     Directory.CreateDirectory(dir);
                                 }
