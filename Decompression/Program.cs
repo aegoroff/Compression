@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
+using System.Text;
 using CommandLine;
 
 namespace Decompression
@@ -23,16 +26,18 @@ namespace Decompression
                             Directory.Delete(opts.ExtractPath, true);
                         }
                         var watch = System.Diagnostics.Stopwatch.StartNew();
-                        var invalidFileNameChars = Path.GetInvalidFileNameChars();
-                        var invalidFilePathChars = Path.GetInvalidPathChars();
+
+                        var invalidFileNameChars = Path.GetInvalidFileNameChars().ToDictionary(x => x, x => $"0x{Convert.ToInt32(x):x2}");
+                        var invalidFilePathChars = Path.GetInvalidPathChars().ToDictionary(x => x, x => $"0x{Convert.ToInt32(x):x2}");
 
                         using (var archive = ZipFile.OpenRead(opts.ZipFile))
                         {
                             foreach (var entry in archive.Entries)
                             {
-                                var zippedDir = entry.FullName.AsSpan()[.. (entry.FullName.Length - entry.Name.Length)].ToString();
-                                var d = string.Join("_", zippedDir.Split(invalidFilePathChars));
-                                var f = string.Join("_", entry.Name.Split(invalidFileNameChars));
+                                var dirSpan = entry.FullName.AsSpan()[.. (entry.FullName.Length - entry.Name.Length)];
+                                var d = ReplaceInvalidChars(dirSpan, invalidFilePathChars);
+                                var f = ReplaceInvalidChars(entry.Name.AsSpan(), invalidFileNameChars);
+
                                 var full = Path.Combine(d, f);
                                 
                                 var destinationPath = Path.GetFullPath(Path.Combine(opts.ExtractPath, full));
@@ -61,6 +66,24 @@ namespace Decompression
                         Console.WriteLine(e);
                     }
                 });
+        }
+
+        private static string ReplaceInvalidChars(ReadOnlySpan<char> s, IReadOnlyDictionary<char, string> invalids)
+        {
+            var result = new StringBuilder();
+            foreach (var c in s)
+            {
+                if (invalids.TryGetValue(c, out var replacement))
+                {
+                    result.Append(replacement);
+                }
+                else
+                {
+                    result.Append(c);
+                }
+            }
+
+            return result.ToString();
         }
     }
 
