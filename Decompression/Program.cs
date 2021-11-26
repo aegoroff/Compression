@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
+using System.Text;
 using CommandLine;
 
 namespace Decompression
@@ -24,13 +27,22 @@ namespace Decompression
                         }
                         var watch = System.Diagnostics.Stopwatch.StartNew();
 
+                        var invalidFileNameChars = Path.GetInvalidFileNameChars().ToDictionary(x => x, x => $"0x{Convert.ToInt32(x):x2}");
+                        var invalidFilePathChars = Path.GetInvalidPathChars().ToDictionary(x => x, x => $"0x{Convert.ToInt32(x):x2}");
+
                         using (var archive = ZipFile.OpenRead(opts.ZipFile))
                         {
                             foreach (var entry in archive.Entries)
                             {
-                                var destinationPath = Path.GetFullPath(Path.Combine(opts.ExtractPath, entry.FullName));
+                                var dirSpan = entry.FullName.AsSpan()[.. (entry.FullName.Length - entry.Name.Length)];
+                                var d = ReplaceInvalidChars(dirSpan, invalidFilePathChars);
+                                var f = ReplaceInvalidChars(entry.Name.AsSpan(), invalidFileNameChars);
+
+                                var full = Path.Combine(d, f);
+                                
+                                var destinationPath = Path.GetFullPath(Path.Combine(opts.ExtractPath, full));
                                 var dir = Path.GetDirectoryName(destinationPath);
-                                if (!Directory.Exists(dir))
+                                if (dir != null && !Directory.Exists(dir))
                                 {
                                     Directory.CreateDirectory(dir);
                                 }
@@ -54,6 +66,24 @@ namespace Decompression
                         Console.WriteLine(e);
                     }
                 });
+        }
+
+        private static string ReplaceInvalidChars(ReadOnlySpan<char> s, IReadOnlyDictionary<char, string> invalids)
+        {
+            var result = new StringBuilder();
+            foreach (var c in s)
+            {
+                if (invalids.TryGetValue(c, out var replacement))
+                {
+                    result.Append(replacement);
+                }
+                else
+                {
+                    result.Append(c);
+                }
+            }
+
+            return result.ToString();
         }
     }
 
