@@ -27,8 +27,8 @@ namespace Decompression
                         }
                         var watch = System.Diagnostics.Stopwatch.StartNew();
 
-                        var invalidFileNameChars = Path.GetInvalidFileNameChars().ToDictionary(x => x, x => $"0x{Convert.ToInt32(x):x2}");
-                        var invalidFilePathChars = Path.GetInvalidPathChars().ToDictionary(x => x, x => $"0x{Convert.ToInt32(x):x2}");
+                        var invalidFileNameChars = Path.GetInvalidFileNameChars().ToDictionary(x => x, x => $"#{Convert.ToInt32(x):x2}");
+                        var invalidFilePathChars = Path.GetInvalidPathChars().ToDictionary(x => x, x => $"#{Convert.ToInt32(x):x2}");
 
                         using (var archive = ZipFile.OpenRead(opts.ZipFile))
                         {
